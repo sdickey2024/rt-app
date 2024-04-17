@@ -1084,8 +1084,24 @@ static void _set_thread_uclamp(thread_data_t *data, sched_data_t *sched_data)
 	}
 }
 
+typedef struct {
+	int type;
+	char *name;
+} sched_type_data;
+
+sched_type_data sched_types[5] =
+{
+	{ SCHED_OTHER,    "SCHED_OTHER"    },
+	{ SCHED_IDLE,	  "SCHED_IDLE"	   },
+	{ SCHED_RR,	  "SCHED_RR"	   },
+	{ SCHED_FIFO,	  "SCHED_FIFO"	   },
+	{ SCHED_DEADLINE, "SCHED_DEADLINE" },
+};
+
 static void set_thread_param(thread_data_t *data, sched_data_t *sched_data)
 {
+	int i;
+
 	if (!sched_data)
 		return;
 
@@ -1098,17 +1114,22 @@ static void set_thread_param(thread_data_t *data, sched_data_t *sched_data)
 
 	switch (sched_data->policy) {
 		case rr:
+			log_error("sched_type: %s", sched_types[rr].name);
 		case fifo:
+			log_error("sched_type: %s", sched_types[fifo].name);
 			_set_thread_rt(data, sched_data);
 			_set_thread_uclamp(data, sched_data);
 			break;
 		case other:
+			log_error("sched_type: %s", sched_types[other].name);
 		case idle:
+			log_error("sched_type: %s", sched_types[idle].name);
 			_set_thread_cfs(data, sched_data);
 			_set_thread_uclamp(data, sched_data);
 			data->lock_pages = 0; /* forced off */
 			break;
 		case deadline:
+			log_error("sched_type: %s", sched_types[deadline].name);
 			_set_thread_deadline(data, sched_data);
 			break;
 		default:
